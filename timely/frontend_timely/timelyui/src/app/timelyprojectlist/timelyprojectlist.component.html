@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-center">
+  <div *ngIf="!pass">
+      <button type="button" class="btn btn-primary" (click)="onStartNewProject()">Start</button>
+  </div>
+  <div *ngIf="pass">
+      <button type="button" class="btn btn-secondary" (click)="open(content)">Stop</button>
+  </div>
+</div>
+<div class="container mt-3"  *ngIf="projects.length > 0">   
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Start</th>
+        <th>Stop</th>
+        <th>Duration</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr *ngFor="let project of pageSlice">
+            <td>
+                {{ projNameBeautify(project.projectName) }}
+            </td>
+            <td>{{ project.startDate | date:'dd.MM.y hh:mm' }}</td>
+            <td *ngIf="project.endDate != null">
+                {{ project.endDate | date:'dd.MM.y hh:mm' }}
+            </td>
+            <td *ngIf="project.endDate == null">
+                ...
+            </td>
+            <td>
+                {{ convertTimeMS(project.duration) }}
+            </td>
+            <div ngbDropdown class="d-inline-block">
+                <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle></button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button ngbDropdownItem (click)="onRequestForModalWindow(project); open(contentEdit)">Edit</button>
+                  <button ngbDropdownItem (click)="onRequestForModalWindow(project); open(contentDelete)">Delete</button>
+                </div>
+            </div>
+          </tr>
+    </tbody>
+    <tfoot>
+      <p></p>
+    </tfoot>
+  </table>
+
+  <mat-paginator [length]="numberOfProjects"
+               [pageSize]="3"
+               [pageSizeOptions]="[3, 5, 10]"
+               (page)="OnPageChange($event)">
+</mat-paginator>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Stop timer</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); goToDismissedModalWindow()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label for="projectNameBinding">Project name:</label>
+            <input type="text" id="projectNameBinding">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark"  (click)= "onStopNewProject(); modal.close('Save click')">Stop timer</button>
+    </div>
+  </ng-template>
+
+  <ng-template #contentEdit let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Stop timer</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); goToDismissedModalWindowRevert()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label for="projectNameBinding">Project name:</label>
+            <input type="text" id="projectNameBinding" name="projectNameBinding" [(ngModel)]="projectNameBinding">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark"  (click)= "onStopNewProject(); modal.close('Save click')">Edit project</button>
+    </div>
+  </ng-template>
+
+  <ng-template #contentDelete let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Stop timer</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); goToDismissedModalWindowRevert()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label for="projectNameBinding">Project name:</label>
+            <input type="text" id="projectNameBinding" name="projectNameBinding" [(ngModel)]="projectNameBinding">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark"  (click)= "onDeleteProject(); modal.close('Save click')">Delete project</button>
+    </div>
+  </ng-template>
